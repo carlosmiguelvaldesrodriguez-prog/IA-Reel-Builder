@@ -1,0 +1,44 @@
+name: Construir Aplicación para Windows
+
+on:
+  push:
+    branches: [ "main" ] # Se activa cada vez que guardas un cambio en la rama principal
+  workflow_dispatch: # También te permite iniciarlo manualmente
+
+jobs:
+  build-windows:
+    runs-on: windows-latest # Le pide a GitHub una computadora con Windows prestada
+
+    steps:
+      # 1. Descarga tu código desde GitHub a la máquina virtual de Windows
+      - name: Clonar el repositorio
+        uses: actions/checkout@v4
+
+      # 2. Instala el motor de Flutter en esa máquina virtual
+      - name: Instalar Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      # 3. Habilita la capacidad de construir para el escritorio de Windows
+      - name: Habilitar soporte para Windows Desktop
+        run: flutter config --enable-windows-desktop
+
+      # 4. Crea los archivos de proyecto necesarios que faltan
+      - name: Crear archivos de plataforma
+        run: flutter create . --platforms=windows
+
+      # 5. Instala las "piezas de Lego" (Gemini, File Picker, etc.)
+      - name: Obtener dependencias
+        run: flutter pub get
+
+      # 6. Compila el programa .exe en modo optimizado (Release)
+      - name: Construir el ejecutable de Windows
+        run: flutter build windows --release
+
+      # 7. Empaqueta el resultado en un .zip para que lo descargues
+      - name: Cargar el artefacto (tu app terminada)
+        uses: actions/upload-artifact@v4
+        with:
+          name: IA-Reel-Studio-Instalador
+          path: build/windows/runner/Release/
