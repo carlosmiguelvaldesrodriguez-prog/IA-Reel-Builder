@@ -1,4 +1,5 @@
-name: mi_estudio_app
+name: ia_reel_builder
+
 description: Creador de Reels con IA
 publish_to: 'none'
 version: 1.0.0+1
